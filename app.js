@@ -1,19 +1,29 @@
 const express = require('express');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
 const app = express();
 
-// route to retrieve a list of items
-app.get('/api/items', (req, res) => {
-  // retrieve items from your database or other data source
-  const items = [
-    { id: 1, name: 'Item 1' },
-    { id: 2, name: 'Item 2' },
-    { id: 3, name: 'Item 3' }
-  ];
+app.use(cors());
 
-  res.json(items);
+const secret = crypto.randomBytes(64).toString('hex');
+
+app.get('/api/createToken', (req, res)=>{
+
+  const currentTime = new Date();
+  const expiresIn = 60 * 60;
+  const expiresAt = new Date(currentTime.getTime() + expiresIn * 1000);
+
+  this.secret = secret;
+  const token = jwt.sign({id: 123, secret}, secret, {expiresIn});
+  res.send({
+    token, 
+    created_at: currentTime.toLocaleString(), 
+    expires_at: expiresAt.toLocaleString()
+  });
 });
 
-// start the server
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.listen(3001, () => {
+  console.log('Server is running on port 3001');
 });
